@@ -1,9 +1,18 @@
 #!/bin/python3
 
-import RPi.GPIO as GPIO
-import projectConsts as PROJ
+#-----------------------------------------
+# NAME: Megan Galbraith
+# 
+# REMARKS: A Python script that sets the wheels in REVERSE motion
+#
+#-----------------------------------------
 
-GPIO.setmode(GPIO.BCM)
+import RPi.GPIO as GPIO
+import projectSetup as PROJ
+
+PROJ.gpioSetup()
+
+# GPIO.setmode(GPIO.BCM)
 
 # shouldn't have to do this because set at start up
 #GPIO.setup(PROJ.LEFT_FWD, GPIO.OUT)
