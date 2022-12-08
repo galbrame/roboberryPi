@@ -9,6 +9,51 @@
         <!--<a href="https://www.flaticon.com/free-icons/raspberry-pi" title="raspberry pi icons">Raspberry pi icons created by Freepik - Flaticon</a>-->
     </head>
     <body>
+        <header>
+            <div class="content-wrapper">
+                <h1><img src="assets/raspberry-pi.png"> Welcome to roboberryPi! <img src="assets/raspberry-pi.png"></h1>
+            </div>
+        </header>
+        
+        <!--MAIN BODY-->
+        <div class="content-wrapper">
+            
+            <h2>Take me for a spin!</h2>
+            
+            <p>Use the arrow buttons to control the direction<br>Use the speed buttons to control, well, the speed.</p>
 
+            <div class="button-block">
+                <button id="forward"><img src="assets/icons8-forward-64.png"></button>
+                <button id="left"><img src="assets/icons8-left-64.png"></button>
+                <button id="stop"><img src="assets/icons8-stop-64.png"></button>
+                <button id="right"><img src="assets/icons8-right-64.png"></button>
+                <button id="reverse"><img src="assets/icons8-reverse-64.png"></button>
+            </div>
+
+            <div class="speedometer">
+                <!-- Unused slider option, because it was neat but not as useful as radio buttons -->
+                <!--
+                <label for="speed">Speed:</label>
+                <input type="range" id="speed" min="1" max="4" value="1" oninput="rangevalue.value=value">
+                <output id="rangevalue">1</output>
+                -->
+
+                <!-- "value" will be used to pass a pulse width modulation speed -->
+                <input type="radio" id="slow" name="speed" value="512">
+                <label for="slow">Slow</label>
+                <input type="radio" id="medium" name="speed" value="768">
+                <label for="medium" checked>Medium</label>
+                <input type="radio" id="fast" name="speed" value="1024">
+                <label for="fast">Fast</label>
+            </div>
+
+        </div>
+
+        <!--FOOTER REGION-->
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <footer>
+            <span class="footer-left">Project by <a href="https://github.com/galbrame/roboberryPi">Megan Galbraith <img class="icon" src="assets/icons8-github-64.png"></a></span>
+        </footer>
     </body>
 </html>
