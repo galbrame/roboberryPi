@@ -24,7 +24,8 @@ TEST_PORT = 4000
 CODES = {200: "200 OK", 201: "201 Created", 204: "204 No Content", 400: "400 Bad Request", 
             401: "401 Unauthorized", 404: "404 Not Found", 500: "500 Internal Server Error"}
 TYPES = {"txt": "text/plain", "html": "text/html", "json": "application/json", 
-            "jpeg": "image/jpeg", "png": "image:png"}
+            "jpeg": "image/jpeg", "png": "image/png", "css": "text/css",
+            "js": "text/javascript"}
 
 
 
