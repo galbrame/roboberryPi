@@ -143,20 +143,6 @@ def doGET(path, reqHeaders):
     contentType = TYPES["txt"]
     body = ""
 
-    # try:
-    #     #API calls
-    #     if path.find("api") > 0:
-    #         apiPath = parseAPI(path)
-
-    #     #regular file fetching
-    #     else:
-    #         body = readPath(path)
-    #         if body.find("<html>"):
-    #             contentType = TYPES["html"]
-    #         else:
-    #             pathParts = path.split(".")
-    #             contentType = TYPES.get(pathParts[-1])
-
     try:
         body = readPath(path)
 
@@ -191,7 +177,7 @@ def doGET(path, reqHeaders):
 # PARAMETERS:
 #       path: The API call
 #       reqHeaders: A {list/dict?} of the http request headers?????????????
-#
+#       reqBody: The body of the request, where the parameters are hidden
 # RETURNS:
 #       myResponse: An HttpResponse as a string
 #-----------------------------------------
@@ -209,7 +195,8 @@ def doPOST(path, reqHeaders, reqBody):
         # /api/move and /api/speed will have parameters in the request body
         else:
             try:
-                params = parseAPIBody(reqBody)
+                theBody = json.loads(reqBody)
+                params = parseAPIBody(theBody)
 
                 if path.find("speed"):
                     os.system("./cgi-bin/changeSpeed.cgi") # " + params["speed"])
@@ -220,6 +207,14 @@ def doPOST(path, reqHeaders, reqBody):
             except HttpException:
                 print("httpErr in doPOST")
                 raise
+
+            except json.JSONDecodeError as jde:
+                print("Problem unpacking json")
+                print(jde)
+
+            except Exception as e:
+                print("Something went wrong with launching the script")
+                print(e)
 
     else:
         raise BadRequest
@@ -257,7 +252,7 @@ def beginThread(conn):
             if msgType == "GET":
                 myResponse = doGET(path, reqHeaders)
             elif msgType == "POST":
-                myResponse = doPOST(path, reqHeaders, json.loads(reqBody))
+                myResponse = doPOST(path, reqHeaders, reqBody)
 
         # just in case something goes ka-boom
         if myResponse is None:
