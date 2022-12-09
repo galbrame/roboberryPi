@@ -150,7 +150,7 @@ class webserverTests(unittest.TestCase):
     #------------------------------------------
     def test_request_webpage(self):
         msgType = "GET"
-        path = "index.html"
+        path = "/" #how index.html is often requested
         cookie = "username"
         msgLen = 0
         body = ""
@@ -166,20 +166,18 @@ class webserverTests(unittest.TestCase):
         status, respHeaders, respBody = self.parseResponse(theResp)
 
         try:
-            respBody = json.loads(respBody)
-        except json.JSONDecodeError as jde:
-            print(jde)
-
-        try:
-            fd = open(path, "r")
+            fd = open("index.html", "r")
             testCompare = fd.read()
             fd.close()
         except FileNotFoundError as e:
             print("index.html must be located in same directory as testing suite to run this test")
 
         self.assertEqual(testCompare, respBody)
+        self.assertEqual(respHeaders["Content-Type"], "text/html")
 
 
+
+    # checking for proper Content-Type header, since that's been an issue
     #------------------------------------------
     def test_request_css(self):
         msgType = "GET"
@@ -199,6 +197,7 @@ class webserverTests(unittest.TestCase):
         status, respHeaders, respBody = self.parseResponse(theResp)
 
         self.assertEqual(respHeaders["Content-Type"], "text/css")
+
 
 
     # This test requires a file called someText.txt in the same directory as
@@ -222,11 +221,6 @@ class webserverTests(unittest.TestCase):
         theResp = testResp.decode("utf-8")
 
         status, respHeaders, respBody = self.parseResponse(theResp)
-
-        try:
-            respBody = json.loads(respBody)
-        except json.JSONDecodeError as jde:
-            print(jde)
 
         try:
             fd = open(path, "r")

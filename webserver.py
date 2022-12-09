@@ -73,27 +73,6 @@ def readPath(myPath):
 
 
 
-################################
-#------------------------------------------
-# parseAPI
-#
-# DESCRIPTION: Parses an API path call
-#
-# PARAMETERS:
-#       path: an API call
-#
-# RETURNS:
-#       parsed: a list of API path parts, minus the /api/ part
-#-----------------------------------------
-def parseAPI(path):
-    parsed = path.split("/")
-    #get rid of the /api/ part
-    parsed.pop(0) 
-    parsed.pop(0) 
-
-    return parsed
-
-
 #------------------------------------------
 # parseAPIBody
 #
@@ -147,9 +126,15 @@ def doGET(path, reqHeaders):
     try:
         body = readPath(path)
 
-        pathParts = path.split(".")
-        contentType = TYPES[pathParts[-1]]
+        # get the Content-Type from the file extension
+        if path != "/":
+            pathParts = path.split(".")
+            contentType = TYPES[pathParts[-1]]
 
+        # except index.html is often not called by name...
+        elif body.find("<html>") > 0:
+            contentType = TYPES["html"]
+        
 
     except HttpException:
         print("httpErr in doGET")
