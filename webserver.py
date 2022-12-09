@@ -14,7 +14,7 @@ import threading
 import sys
 import os
 import json
-from myHttp import * 
+from myHttp import *
 
 
 running = True
@@ -70,6 +70,26 @@ def readPath(myPath):
         raise NotFound
 
     return body
+
+
+#------------------------------------------
+# parseAPI
+#
+# DESCRIPTION: Parses an API path call
+#
+# PARAMETERS:
+#       path: an API call
+#
+# RETURNS:
+#       parsed: a string indicating the right API call
+#-----------------------------------------
+def parseAPI(path):
+    # turns the path into a list of tokens
+    parsed = path.split("/")
+
+    # just need the last token
+    return parsed[-1]
+
 
 
 
@@ -170,34 +190,37 @@ def doPOST(path, reqHeaders, reqBody):
     # else unauth err (or something, maybe a browser popup like "wait your turn, please")
 
     # check for API calls specifically
-    if path.find("api") > 0:
-        # /api/stop will have empty request body
-        if path.find("stop"):
-            os.system("./cgi-bin/stop.cgi")
+    apiPath = parseAPI(path)
 
-        # /api/move and /api/speed will have parameters in the request body
-        else:
-            try:
-                theBody = json.loads(reqBody)
-                params = parseAPIBody(theBody)
+    # /api/stop will have empty request body
+    if apiPath == "stop":
+        os.system("./cgi-bin/stop.cgi")
 
-                if path.find("speed"):
-                    os.system("./cgi-bin/changeSpeed.cgi") # " + params["speed"])
+    # /api/move and /api/speed will have parameters in the request body
+    elif apiPath != "":
+        try:
+            theBody = json.loads(reqBody)
+            params = parseAPIBody(theBody)
 
-                else:
-                    os.system("./cgi-bin/" + params["direction"]) # + ".cgi " + params["speed"])
+            if apiPath == "speed":
+                os.system("./cgi-bin/changeSpeed.cgi") # " + params["speed"])
+
+            else:
+                os.system("./cgi-bin/" + params["direction"] + ".cgi") # + ".cgi " + params["speed"])
         
-            except HttpException:
-                print("httpErr in doPOST")
-                raise
+        except HttpException:
+            print("httpErr in doPOST")
+            raise
 
-            except json.JSONDecodeError as jde:
-                print("Problem unpacking json")
-                print(jde)
+        except json.JSONDecodeError as jde:
+            print("Problem unpacking json")
+            print(jde)
+            raise BadRequest
 
-            except Exception as e:
-                print("Something went wrong with launching the script")
-                print(e)
+        except Exception as e:
+            print("Something went wrong with launching the script")
+            print(e)
+            raise BadRequest
 
     else:
         raise BadRequest
