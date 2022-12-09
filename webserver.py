@@ -19,7 +19,7 @@ from myHttp import *
 
 running = True
 HOST = ""
-PORT = 80
+PORT = 5000
 TEST_PORT = 4000
 CODES = {200: "200 OK", 201: "201 Created", 204: "204 No Content", 400: "400 Bad Request", 
             401: "401 Unauthorized", 404: "404 Not Found", 500: "500 Internal Server Error"}
@@ -43,6 +43,7 @@ TYPES = {"txt": "text/plain", "html": "text/html", "json": "application/json",
 def readPath(myPath):
     body = ""
     searchPath = myPath
+
     #browser looking for index.html
     if myPath == "/":
         searchPath = "./index.html"
@@ -71,6 +72,7 @@ def readPath(myPath):
 
 
 
+################################
 #------------------------------------------
 # parseAPI
 #
@@ -91,6 +93,37 @@ def parseAPI(path):
     return parsed
 
 
+#------------------------------------------
+# parseAPIBody
+#
+# DESCRIPTION: Extract the parameters from the POST body and turn them
+#              into a dictionary.
+#
+# PARAMETERS:
+#       body: the body of a POST API request
+#
+# RETURNS:
+#       params: the API parameters, as a key: value pair dictionary
+#-----------------------------------------
+def parseAPIBody(body):
+    params = {}
+
+    if body:
+        keyPairs = body.split("\n")
+
+        for k in keyPairs:
+            tempParam = k.split("=")
+            params[tempParam[0]] = tempParam[1]
+
+        if not ("direction" in params or "speed" in params):
+            raise BadRequest
+    
+    else:
+        raise BadRequest
+
+    return params
+
+
 
 #------------------------------------------
 # doGET
@@ -99,7 +132,7 @@ def parseAPI(path):
 #
 # PARAMETERS:
 #       path: A file directory
-#       reqHeaders: A {list/dict?} of the http request headers
+#       reqHeaders: A {list/dict?} of the http request headers  NEED THIS?
 #
 # RETURNS:
 #       myResponse: An HttpResponse as a string
@@ -111,18 +144,13 @@ def doGET(path, reqHeaders):
     body = ""
 
     try:
-        #API calls
-        if path.find("api") > 0:
-            apiPath = parseAPI(path)
+        body = readPath(path)
 
-        #regular file fetching
+        if body.find("<html>"):
+            contentType = TYPES["html"]
         else:
-            body = readPath(path)
-            if body.find("<html>"):
-                contentType = TYPES["html"]
-            else:
-                pathParts = path.split(".")
-                contentType = TYPES.get(pathParts[-1])
+            pathParts = path.split(".")
+            contentType = TYPES.get(pathParts[-1])
 
 
     except HttpException:
@@ -132,7 +160,7 @@ def doGET(path, reqHeaders):
     if body:
         respCode = CODES[200]
 
-    #if cookie
+    #if cookie - check for who's asking or just compare to list of conn?
     #do something with headers
 
     myResponse = HttpResponse(respCode, contentType, "", body)
@@ -147,14 +175,54 @@ def doGET(path, reqHeaders):
 # DESCRIPTION: POST API calls the robot control scripts
 #
 # PARAMETERS:
-#       path: A file directory
-#       reqHeaders: A {list/dict?} of the http request headers
-#
+#       path: The API call
+#       reqHeaders: A {list/dict?} of the http request headers?????????????
+#       reqBody: The body of the request, where the parameters are hidden
 # RETURNS:
 #       myResponse: An HttpResponse as a string
 #-----------------------------------------
 def doPOST(path, reqHeaders, reqBody):
-    pass
+
+    # if main user, then do POST
+    # else unauth err (or something, maybe a browser popup like "wait your turn, please")
+
+    # check for API calls specifically
+    if path.find("api") > 0:
+        # /api/stop will have empty request body
+        if path.find("stop"):
+            os.system("./cgi-bin/stop.cgi")
+
+        # /api/move and /api/speed will have parameters in the request body
+        else:
+            try:
+                theBody = json.loads(reqBody)
+                params = parseAPIBody(theBody)
+
+                if path.find("speed"):
+                    os.system("./cgi-bin/changeSpeed.cgi") # " + params["speed"])
+
+                else:
+                    os.system("./cgi-bin/" + params["direction"]) # + ".cgi " + params["speed"])
+        
+            except HttpException:
+                print("httpErr in doPOST")
+                raise
+
+            except json.JSONDecodeError as jde:
+                print("Problem unpacking json")
+                print(jde)
+
+            except Exception as e:
+                print("Something went wrong with launching the script")
+                print(e)
+
+    else:
+        raise BadRequest
+
+    # if we've made it this far with no errors, then only "200 OK" possible
+    myResponse = HttpResponse(CODES[200], TYPES["txt"], "", "")
+
+    return myResponse.toString()
 
 
 
@@ -184,7 +252,7 @@ def beginThread(conn):
             if msgType == "GET":
                 myResponse = doGET(path, reqHeaders)
             elif msgType == "POST":
-                myResponse = doPOST(path, reqHeaders, json.loads(reqBody))
+                myResponse = doPOST(path, reqHeaders, reqBody)
 
         # just in case something goes ka-boom
         if myResponse is None:

@@ -6,15 +6,15 @@
 # REMARKS: Testing suite built alongside webserver.py (and myHttp.py)
 #          to ensure proper functionality. 
 #
-# TO RUN: `python -m unittest -v`
+# TO RUN: In a terminal in the same directory as test_suite.py, enter:
+#         `python -m unittest -v`
 #
-# NOTE: webserver must be running in test mode on the same machine before
-#       launching test suite: `./webserver.py test`
+# NOTE: webserver.py must be running in test mode (port 4000) on the same
+#       machine before launching the test suite: `./webserver.py test`
 #-----------------------------------------
 
 import unittest
 import socket
-import time
 import json
 from myHttp import *
 
@@ -76,6 +76,7 @@ class webserverTests(unittest.TestCase):
     serConn = None
 
 
+    #==== HOUSEKEEPING ========================
     #------------------------------------------
     def setUp(self):
 
@@ -92,6 +93,7 @@ class webserverTests(unittest.TestCase):
     def tearDown(self):
         self.serConn.close()
 
+    #==========================================
 
     
     #------------------------------------------
@@ -142,7 +144,9 @@ class webserverTests(unittest.TestCase):
         self.assertEqual(status, "400")
 
     
-
+    # This test requires an html file called index.html in the same directory
+    # as test_suite.py. At a minimum, your index.html should contain the <html>
+    # tag, as this is a verification check in webserver.py itself.
     #------------------------------------------
     def test_request_webpage(self):
         msgType = "GET"
@@ -176,12 +180,10 @@ class webserverTests(unittest.TestCase):
         self.assertEqual(testCompare, respBody)
 
 
-
-    #------------------------------------------
-    #def test_request_image(self):
-
-
-
+    # This test requires a file called someText.txt in the same directory as
+    # test_suite.py. The contents of the file don't matter, as they'll just 
+    # be compared to the file itself (that is, there's no specifically 
+    # expected contents)
     #------------------------------------------
     def test_request_file(self):
         msgType = "GET"
@@ -235,6 +237,66 @@ class webserverTests(unittest.TestCase):
         self.assertTrue(theResp.find(testCompare) > 0)
 
 
+    #------------------------------------------
+    def test_request_move_car(self):
+        msgType = "POST"
+        path = "/api/move"
+        cookie = "username"
+        body = "direction=forward\nspeed=512"
+        body = json.dumps(body)
+        msgLen = len(body)
+
+        print("\nTesting /api/move")
+        testReq = self._REQUEST.format(msgType, path, cookie, msgLen, body)
+
+        self.serConn.sendall(testReq.encode())
+        testResp = self.serConn.recv(1024)
+        theResp = testResp.decode("utf-8")
+
+        print(theResp)
+
+        self.assertTrue(theResp.find("200 OK") > 0)
+
+
+    #------------------------------------------
+    def test_request_stop_car(self):
+        msgType = "POST"
+        path = "/api/stop"
+        cookie = "username"
+        body = ""
+        msgLen = len(body)
+
+        print("\nTesting /api/stop")
+        testReq = self._REQUEST.format(msgType, path, cookie, msgLen, body)
+
+        self.serConn.sendall(testReq.encode())
+        testResp = self.serConn.recv(1024)
+        theResp = testResp.decode("utf-8")
+
+        print(theResp)
+
+        self.assertTrue(theResp.find("200 OK") > 0)
+
+
+    #------------------------------------------
+    def test_request_change_speed(self):
+        msgType = "POST"
+        path = "/api/speed"
+        cookie = "username"
+        body = "speed=512"
+        body = json.dumps(body)
+        msgLen = len(body)
+
+        print("\nTesting /api/speed")
+        testReq = self._REQUEST.format(msgType, path, cookie, msgLen, body)
+
+        self.serConn.sendall(testReq.encode())
+        testResp = self.serConn.recv(1024)
+        theResp = testResp.decode("utf-8")
+
+        print(theResp)
+
+        self.assertTrue(theResp.find("200 OK") > 0)
 
 
 
