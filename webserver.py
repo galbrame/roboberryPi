@@ -14,6 +14,7 @@ import threading
 import sys
 import os
 import json
+import time
 from myHttp import * 
 
 
@@ -26,6 +27,8 @@ CODES = {200: "200 OK", 201: "201 Created", 204: "204 No Content", 400: "400 Bad
 TYPES = {"txt": "text/plain", "html": "text/html", "json": "application/json", 
             "jpeg": "image/jpeg", "png": "image/png", "css": "text/css",
             "js": "text/javascript"}
+log = "" # file descriptor for current log file
+logPath = "logs/"
 
 
 
@@ -49,12 +52,14 @@ def readPath(myPath):
     if myPath == "/":
         searchPath = "./index.html"
 
+    # adding proper file extensions to avoid 404/400 responses
     elif len(myPath) > 1 and myPath[0] == "/":
         searchPath = "." + myPath
 
     elif myPath[0:2] != "./":
         searchPath = "./" + myPath
     
+    # now we can actually look for the resource
     if os.path.isfile(searchPath):
         try:
             fd = open(searchPath, "r")
@@ -194,10 +199,12 @@ def doPOST(path, reqHeaders, reqBody):
             except json.JSONDecodeError as jde:
                 print("Problem unpacking json")
                 print(jde)
+                log.write("\nJSON decode error in doPOST")
 
             except Exception as e:
                 print("Something went wrong with launching the script")
                 print(e)
+                log.write("\nProblem launching the scripts")
 
     else:
         raise BadRequest
@@ -249,13 +256,17 @@ def beginThread(conn):
         print("Thread timeout happened")
 
     except HttpException as httpErr:
-        #print(httpErr)
         print("Response:\n" + str (httpErr))
+        log.write("\nHttpException in thread:")
+        log.write(httpErr)
         conn.sendall(str (httpErr).encode())
 
     except Exception as e:
         print("Unknown exception happened")
         print(e)
+        log.write("\nUnknown exception in thread:")
+        log.write("Request: " + msgType + " " + path)
+        log.write(e)
 
     finally:
         conn.close()
@@ -275,11 +286,18 @@ if len(args) > 1:
     if (args.pop(0) == "test"):
         PORT = TEST_PORT
 
-print("RPi server running on", socket.gethostname(), PORT)
+# begin the log file
+logPath += time.time()
+log = open(logPath, "x")
+log.write("Beginning log " + time.time() + " on " + socket.gethostbyaddr
+            + ":" + PORT + "\n")
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((HOST, PORT))
+
+    print("RPi server running on", socket.gethostname(), PORT)
+    
     sock.listen()
 
     while running:
@@ -291,14 +309,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 
         except socket.timeout as e:
             print("Socket timeout!")
+            log.write("\nThere was a socket timeout")
         
         except KeyboardInterrupt as e:
             print("\n***SERVER EXITING***\n")
+            log.write("\n\nSERVER EXITING")
+            log.close()
             sock.close()
             running = False
         
         except Exception as e:
             print("An unknown exception occurred")
             print(e)
+            log.write("\nUnknown exception in MAIN:")
+            log.write(e)
 
 sys.exit(0)
