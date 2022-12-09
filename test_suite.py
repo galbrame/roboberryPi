@@ -180,6 +180,27 @@ class webserverTests(unittest.TestCase):
         self.assertEqual(testCompare, respBody)
 
 
+    #------------------------------------------
+    def test_request_css(self):
+        msgType = "GET"
+        path = "assets/roboStyles.css"
+        cookie = "username"
+        msgLen = 0
+        body = ""
+        testCompare = ""
+
+        print("\nTesting GET css")
+        testReq = self._REQUEST.format(msgType, path, cookie, msgLen, body)
+
+        self.serConn.sendall(testReq.encode())
+        testResp = self.serConn.recv(4096)
+        theResp = testResp.decode("utf-8")
+
+        status, respHeaders, respBody = self.parseResponse(theResp)
+
+        self.assertEqual(respHeaders["Content-Type"], "text/css")
+
+
     # This test requires a file called someText.txt in the same directory as
     # test_suite.py. The contents of the file don't matter, as they'll just 
     # be compared to the file itself (that is, there's no specifically 

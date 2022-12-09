@@ -147,11 +147,8 @@ def doGET(path, reqHeaders):
     try:
         body = readPath(path)
 
-        if body.find("<html>"):
-            contentType = TYPES["html"]
-        else:
-            pathParts = path.split(".")
-            contentType = TYPES.get(pathParts[-1])
+        pathParts = path.split(".")
+        contentType = TYPES[pathParts[-1]]
 
 
     except HttpException:
