@@ -5,7 +5,7 @@
 *
 *******************************************/
 
-var WEB_SERVER = "http://robopi.local:5000" //home LAN
+var WEB_SERVER = "http://robopi.local:4000" //home LAN
 //var WEB_SERVER = "140.193.105.207:5000" //um-secure IP
 var myRequest; //XHR request
 
