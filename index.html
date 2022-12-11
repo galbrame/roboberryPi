@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
+
     <head>
         <meta charset="utf-8">
         <title>roboberryPi!</title>
         <link rel="stylesheet" href="assets/roboStyles.css">
         <script src="assets/roboScripts.js"></script>
         <link type="image/png" sizes="32x32" rel="icon" href="https://cdn-icons-png.flaticon.com/32/5969/5969184.png">
-        <!--<a href="https://www.flaticon.com/free-icons/raspberry-pi" title="raspberry pi icons">Raspberry pi icons created by Freepik - Flaticon</a>-->
     </head>
+
     <body>
         <header>
             <div class="content-wrapper">
@@ -22,6 +23,7 @@
             
             <p>Use the arrow buttons to control the direction<br>Use the speed buttons to control, well, the speed.</p>
 
+            <!-- The central buttons that control the robot's direction of movement (and stop) -->
             <div class="button-block">
                 <button id="forward" onclick="moveCar('forward')"><img src="https://img.icons8.com/nolan/64/1A6DFF/C822FF/sort-up--v2.png"></button>
                 <button id="left" onclick="moveCar('left')"><img src="https://img.icons8.com/nolan/64/1A6DFF/C822FF/sort-left--v1.png"></button>
@@ -31,19 +33,12 @@
             </div>
 
             <div class="speedometer">
-                <!-- Unused slider option, because it was neat but not as useful as radio buttons -->
-                <!--
-                <label for="speed">Speed:</label>
-                <input type="range" id="speed" min="1" max="4" value="1" oninput="rangevalue.value=value">
-                <output id="rangevalue">1</output>
-                -->
-
                 <!-- "value" will be used to pass a pulse width modulation speed -->
-                <input type="radio" id="slow" name="speed" value="512">
+                <input type="radio" id="slow" name="speed" value="512" onclick="changeSpeed('512')">
                 <label for="slow">Slow</label>
-                <input type="radio" id="medium" name="speed" value="768" checked>
+                <input type="radio" id="medium" name="speed" value="768" onclick="changeSpeed('768')" checked>
                 <label for="medium">Medium</label>
-                <input type="radio" id="fast" name="speed" value="1024">
+                <input type="radio" id="fast" name="speed" value="1024" onclick="changeSpeed('1024')">
                 <label for="fast">Fast</label>
             </div>
 
@@ -53,7 +48,7 @@
         <p>&nbsp;</p>
         <p>&nbsp;</p>
         <footer>
-            <span class="footer-left">Project by <a href="https://github.com/galbrame/roboberryPi">Megan Galbraith <img class="icon" src="https://img.icons8.com/glyph-neue/64/null/github.png"></a></span>
+            Project by <a href="https://github.com/galbrame/roboberryPi">Megan Galbraith <img class="icon" src="https://img.icons8.com/glyph-neue/64/null/github.png"></a>
         </footer>
     </body>
 </html>
