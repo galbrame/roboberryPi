@@ -187,8 +187,11 @@ def doGET(path, reqHeaders):
 #       myResponse: An HttpResponse as a string
 #-----------------------------------------
 def doPOST(path, reqHeaders, reqBody):
+    # default values
     params = {}
-    speed = 0
+    dir = "stop"
+    speed = "0"
+
     # if main user, then do POST
     # else unauth err (or something, maybe a browser popup like "wait your turn, please")
 
@@ -253,6 +256,8 @@ def doPOST(path, reqHeaders, reqBody):
         # /api/stop has an empty body
         if params.get("speed") is not None:
             speed = params["speed"]
+        if params.get("direction") is not None:
+            dir = params["direction"]
         
         try:
             # just change the speed
@@ -261,7 +266,7 @@ def doPOST(path, reqHeaders, reqBody):
 
             # move in any direction or stop
             else:
-                os.system("./cgi-bin/move.cgi " + DIRECTIONS[params["direction"]] + speed)
+                os.system("./cgi-bin/move.cgi " + DIRECTIONS[dir] + " " + speed)
         
         except Exception as e:
             print("Something went wrong with launching the script")
