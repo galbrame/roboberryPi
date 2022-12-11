@@ -26,6 +26,8 @@ CODES = {200: "200 OK", 201: "201 Created", 204: "204 No Content", 400: "400 Bad
 TYPES = {"txt": "text/plain", "html": "text/html", "json": "application/json", 
             "jpeg": "image/jpeg", "png": "image/png", "css": "text/css",
             "js": "text/javascript"}
+DIRECTIONS = {"forward": "1 0 1 0", "right": "1 0 0 1", "reverse": "0 1 0 1",
+                "left": "0 1 1 0", "stop": "0 0 0 0"}
 
 
 
@@ -185,7 +187,8 @@ def doGET(path, reqHeaders):
 #       myResponse: An HttpResponse as a string
 #-----------------------------------------
 def doPOST(path, reqHeaders, reqBody):
-
+    params = {}
+    speed = 0
     # if main user, then do POST
     # else unauth err (or something, maybe a browser popup like "wait your turn, please")
 
@@ -193,21 +196,44 @@ def doPOST(path, reqHeaders, reqBody):
     apiPath = parseAPI(path)
 
     # /api/stop will have empty request body
-    if apiPath == "stop":
-        os.system("./cgi-bin/stop.cgi")
+    # if apiPath == "stop":
+    #     os.system("./cgi-bin/move.cgi " + DIRECTIONS["stop"] + " 0")
 
-    # /api/move and /api/speed will have parameters in the request body
-    elif apiPath != "":
+    # # /api/move and /api/speed will have parameters in the request body
+    # elif apiPath != "":
+    #     try:
+    #         theBody = json.loads(reqBody)
+    #         params = parseAPIBody(theBody)
+
+    #         if apiPath == "speed":
+    #             os.system("./cgi-bin/changeSpeed.cgi") # " + params["speed"])
+
+    #         else:
+    #             os.system("./cgi-bin/move.cgi " + DIRECTIONS[params["direction"]] + params["speed"])
+        
+    #     except HttpException:
+    #         print("httpErr in doPOST")
+    #         raise
+
+    #     except json.JSONDecodeError as jde:
+    #         print("Problem unpacking json")
+    #         print(jde)
+    #         raise BadRequest
+
+    #     except Exception as e:
+    #         print("Something went wrong with launching the script")
+    #         print(e)
+    #         raise BadRequest
+
+    # else:
+    #     raise BadRequest
+
+    # if the body is not empty, try to parse it
+    if reqBody:
         try:
             theBody = json.loads(reqBody)
             params = parseAPIBody(theBody)
 
-            if apiPath == "speed":
-                os.system("./cgi-bin/changeSpeed.cgi") # " + params["speed"])
-
-            else:
-                os.system("./cgi-bin/" + params["direction"] + ".cgi") # + ".cgi " + params["speed"])
-        
         except HttpException:
             print("httpErr in doPOST")
             raise
@@ -218,12 +244,29 @@ def doPOST(path, reqHeaders, reqBody):
             raise BadRequest
 
         except Exception as e:
-            print("Something went wrong with launching the script")
+            print("Something went wrong")
             print(e)
             raise BadRequest
 
-    else:
-        raise BadRequest
+    # do API call
+    if apiPath != "":
+        # /api/stop has an empty body
+        if params.get("speed") is not None:
+            speed = params["speed"]
+        
+        try:
+            # just change the speed
+            if apiPath == "speed":
+                os.system("./cgi-bin/changeSpeed.cgi") # " + params["speed"])
+
+            # move in any direction or stop
+            else:
+                os.system("./cgi-bin/move.cgi " + DIRECTIONS[params["direction"]] + speed)
+        
+        except Exception as e:
+            print("Something went wrong with launching the script")
+            print(e)
+            raise BadRequest
 
     # if we've made it this far with no errors, then only "200 OK" possible
     myResponse = HttpResponse(CODES[200], TYPES["txt"], "", "")

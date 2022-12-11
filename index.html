@@ -39,11 +39,11 @@
                 -->
 
                 <!-- "value" will be used to pass a pulse width modulation speed -->
-                <input type="radio" id="slow" name="speed" value="512">
+                <input type="radio" id="slow" name="speed" value="512" onclick="changeSpeed('512')">
                 <label for="slow">Slow</label>
-                <input type="radio" id="medium" name="speed" value="768" checked>
+                <input type="radio" id="medium" name="speed" value="768" onclick="changeSpeed('768')" checked>
                 <label for="medium">Medium</label>
-                <input type="radio" id="fast" name="speed" value="1024">
+                <input type="radio" id="fast" name="speed" value="1024" onclick="changeSpeed('1024')">
                 <label for="fast">Fast</label>
             </div>
 
