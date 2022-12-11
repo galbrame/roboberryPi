@@ -3,7 +3,9 @@
 #-----------------------------------------
 # NAME: Megan Galbraith
 # 
-# REMARKS: A custom web server that runs on the Raspberry Pi. It serves the 
+# REMARKS: A multi-threaded web server that runs on the Raspberry Pi. It
+#          serves index.html to a web browser and deals with GET and POST
+#          http requests. 
 #
 # Adapted from webserver.py in Assignment 1 chat app
 #-----------------------------------------
@@ -18,9 +20,9 @@ from myHttp import *
 
 
 running = True
-HOST = ""
-PORT = 5000
-TEST_PORT = 4000
+HOST = "" # host will change depending on which local network roboberry is running on
+PORT = 5000 # port number at boot time
+TEST_PORT = 4000 # alternative port for testing purposes
 CODES = {200: "200 OK", 201: "201 Created", 204: "204 No Content", 400: "400 Bad Request", 
             401: "401 Unauthorized", 404: "404 Not Found", 500: "500 Internal Server Error"}
 TYPES = {"txt": "text/plain", "html": "text/html", "json": "application/json", 
@@ -195,41 +197,7 @@ def doPOST(path, reqHeaders, reqBody):
     # if main user, then do POST
     # else unauth err (or something, maybe a browser popup like "wait your turn, please")
 
-    # check for API calls specifically
     apiPath = parseAPI(path)
-
-    # /api/stop will have empty request body
-    # if apiPath == "stop":
-    #     os.system("./cgi-bin/move.cgi " + DIRECTIONS["stop"] + " 0")
-
-    # # /api/move and /api/speed will have parameters in the request body
-    # elif apiPath != "":
-    #     try:
-    #         theBody = json.loads(reqBody)
-    #         params = parseAPIBody(theBody)
-
-    #         if apiPath == "speed":
-    #             os.system("./cgi-bin/changeSpeed.cgi") # " + params["speed"])
-
-    #         else:
-    #             os.system("./cgi-bin/move.cgi " + DIRECTIONS[params["direction"]] + params["speed"])
-        
-    #     except HttpException:
-    #         print("httpErr in doPOST")
-    #         raise
-
-    #     except json.JSONDecodeError as jde:
-    #         print("Problem unpacking json")
-    #         print(jde)
-    #         raise BadRequest
-
-    #     except Exception as e:
-    #         print("Something went wrong with launching the script")
-    #         print(e)
-    #         raise BadRequest
-
-    # else:
-    #     raise BadRequest
 
     # if the body is not empty, try to parse it
     if reqBody:
@@ -262,7 +230,7 @@ def doPOST(path, reqHeaders, reqBody):
         try:
             # just change the speed
             if apiPath == "speed":
-                os.system("./cgi-bin/changeSpeed.cgi") # " + params["speed"])
+                os.system("./cgi-bin/changeSpeed.cgi " + speed)
 
             # move in any direction or stop
             else:

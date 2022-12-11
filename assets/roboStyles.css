@@ -1,7 +1,10 @@
 /*---------------------------------------------------------
  NAME: Megan Galbraith
  
- REMARKS: The style sheet for the server page the Raspberry Pi hosts
+ REMARKS: The style sheet for the roboberry control web page
+
+ NOTES: I love rainbows, gradients, and dark mode (but you likely already
+        noticed that if you've seen the page).
 ----------------------------------------------------------*/
 
 /*---------MAIN STYLES--------*/
@@ -14,13 +17,11 @@ header {
     font-size: 1.75em;
     background-image: linear-gradient(rgb(225, 30, 107), rgb(204, 225, 30), rgb(30, 225, 148), rgb(49, 30, 225));
     max-width: 100%;
-    /* padding: 50px 20px; */
     padding: 0 10px;
     margin: -10px 0 -10px -10px;
     align-items: center;
 }
 body {
-    /* background: #F3E9D2; */
     background: rgb(45, 45, 45);
     color: white;
     font-size: 15px;
@@ -45,7 +46,6 @@ a {
     display: inline-block;
     justify-content: center;
     align-items: center;
-    /* position: relative; */
 }
 button {
     background-color: rgb(45, 45, 45);
@@ -89,17 +89,14 @@ input[type=radio] {
 label {
     margin-right: 20px;
     margin-left: 7px;
-    /* margin: 0 20px -25px 7px; */
 }
 
 
 /*--------FOOTER--------*/
 footer {
-    /* background: #6f6f6f; */
     background-image: linear-gradient(rgb(49, 30, 225), rgb(30, 225, 148), rgb(204, 225, 30), rgb(225, 30, 107));
     color: black;
     font-weight: 600;
-    /* display: inline-block; */
     width: 100%;
     padding: 10px;
     margin: 0 -10px;
@@ -110,15 +107,3 @@ footer {
     max-width: 42px;
     margin: 0 0 -15px 0;
 }
-/* .footer-left {
-    text-align: left;
-    //position: fixed;
-    left: 0;
-    padding-right: 10px;
-}
-.footer-right {
-    text-align: right;
-    //position: fixed;
-    right: 0;
-    padding: 0 20px;
-} */
