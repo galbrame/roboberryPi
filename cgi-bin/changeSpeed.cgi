@@ -18,7 +18,7 @@
 expected_args=1
 num_args=$# #number of arguments collected from the command line
 reg_ex='^[0-9]+$' #regular expression that looks for non-negative integers
-max_speed = 1024
+max_speed=1024
 
 # First, check if the correct number of arguments have been supplied
 # then assign 
@@ -41,6 +41,7 @@ then
     fi
 
     gpio pwm 1 $speed
+    gpio pwm 26 $speed
 
 else
     echo 'changeSpeed.cgi: ' $expectedargs 'argument required: pwm value'

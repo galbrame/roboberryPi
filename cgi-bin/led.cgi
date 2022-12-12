@@ -17,7 +17,7 @@ LED_gpio=10
 
 if  (( $num_args >= $expected_args )) 
 then
-    gpio write LED_gpio $1
+    gpio write $LED_gpio $1
 else
     echo 'led.cgi: ' $expectedargs 'arguments required: off/on'
     echo 'Example: led.cgi {0/1}'

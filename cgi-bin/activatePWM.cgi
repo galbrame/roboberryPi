@@ -9,10 +9,10 @@
 
 # pin 18 is wPi 1
 pwm_left=1
-# pin 23 is wPi 4
-pwm_right=4
+# pin 12 is wPi 26
+pwm_right=26
 
-gpio mode pwm_left pwm
-gpio mode pwm_right pwm
+gpio mode $pwm_left pwm
+gpio mode $pwm_right pwm
 
 exit 0

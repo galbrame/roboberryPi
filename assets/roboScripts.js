@@ -106,7 +106,7 @@ function changeSpeed(speed) {
 
     myRequest = new XMLHttpRequest();
     myRequest.addEventListener("load", POSTVerificationLoadEvent);
-    myRequest.open("POST", WEB_SERVER + "/api/stop");
+    myRequest.open("POST", WEB_SERVER + "/api/speed");
     myRequest.send(JSON.stringify(reqBody));
 }
 
@@ -118,11 +118,11 @@ function changeSpeed(speed) {
 ******************************************/
 function toggleLight() {
     let toggle = document.getElementById("light_switch");
-    let val = "1"; //default is turn light on
+    let val = "0"; //default is light off
 
-    //if light is already on, turn it off
+    //if light is off, turn it on
     if (toggle.checked) {
-        val = "0";
+        val = "1";
     }
 
     let reqBody = "light=" + val;
