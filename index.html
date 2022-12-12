@@ -35,11 +35,20 @@
             <div class="speedometer">
                 <!-- "value" will be used to pass a pulse width modulation speed -->
                 <input type="radio" id="slow" name="speed" value="512" onclick="changeSpeed('512')">
-                <label for="slow">Slow</label>
+                <label for="slow">Slow</label> <!--50% cycle-->
                 <input type="radio" id="medium" name="speed" value="768" onclick="changeSpeed('768')" checked>
-                <label for="medium">Medium</label>
+                <label for="medium">Medium</label> <!--75% cycle-->
                 <input type="radio" id="fast" name="speed" value="1024" onclick="changeSpeed('1024')">
-                <label for="fast">Fast</label>
+                <label for="fast">Fast</label> <!--100% cycle-->
+            </div>
+
+            <!-- Rounded switch/toggle for light -->
+            <div class="light">
+                <label for="light_switch">Light</label>
+                <label class="switch">
+                    <input type="checkbox" id="light_switch" onclick="toggleLight()" checked>
+                    <span class="slider round"></span>
+                </label>
             </div>
 
         </div>
