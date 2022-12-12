@@ -119,7 +119,7 @@ def parseAPIBody(body):
             tempParam = k.split("=")
             params[tempParam[0]] = tempParam[1]
 
-        if not ("direction" in params or "speed" in params):
+        if not ("direction" in params or "speed" in params or "light" in params):
             raise BadRequest
     
     else:
@@ -193,6 +193,7 @@ def doPOST(path, reqHeaders, reqBody):
     params = {}
     dir = "stop"
     speed = "0"
+    light = "0"
 
     # if main user, then do POST
     # else unauth err (or something, maybe a browser popup like "wait your turn, please")
@@ -226,11 +227,16 @@ def doPOST(path, reqHeaders, reqBody):
             speed = params["speed"]
         if params.get("direction") is not None:
             dir = params["direction"]
+        if params.get("light") is not None:
+            light = params["light"]
         
         try:
             # just change the speed
             if apiPath == "speed":
                 os.system("./cgi-bin/changeSpeed.cgi " + speed)
+
+            elif apiPath == "light":
+                os.system("./cgi-bin/led.cgi " + light)
 
             # move in any direction or stop
             else:
@@ -316,10 +322,16 @@ if len(args) > 1:
 
 print("RPi server running on", socket.gethostname(), PORT)
 
+# Turning on pwm mode doesn't seem to work from rc.local on the Pi, so do here
+os.system("./cgi-bin/activatePWM.cgi")
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((HOST, PORT))
     sock.listen()
+
+    # turn led on to indicate server is running
+    os.system("./cgi-bin/led.cgi 1")
 
     while running:
         try:

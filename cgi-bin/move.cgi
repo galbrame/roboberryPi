@@ -46,6 +46,7 @@ then
     gpio -g write 19 $right_rev
 
     gpio pwm 1 $speed
+    gpio pwm 26 $speed
 
 else
     echo 'move.cgi: ' $expectedargs 'arguments required: left+, left-, right+, right-, pwm'

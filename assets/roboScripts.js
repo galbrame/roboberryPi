@@ -102,10 +102,33 @@ function stopCar() {
 *       speed: the user selected speed for the roboberry
 ******************************************/
 function changeSpeed(speed) {
-    // let reqBody = "speed="+ speed;
+    let reqBody = "speed=" + speed;
 
-    // myRequest = new XMLHttpRequest();
-    // myRequest.addEventListener("load", POSTVerificationLoadEvent);
-    // myRequest.open("POST", WEB_SERVER + "/api/stop");
-    // myRequest.send(JSON.stringify(reqBody));
+    myRequest = new XMLHttpRequest();
+    myRequest.addEventListener("load", POSTVerificationLoadEvent);
+    myRequest.open("POST", WEB_SERVER + "/api/speed");
+    myRequest.send(JSON.stringify(reqBody));
+}
+
+
+/******************************************
+* toggleLight
+*
+* DESCRIPTION: Turn the LED off or on.
+******************************************/
+function toggleLight() {
+    let toggle = document.getElementById("light_switch");
+    let val = "0"; //default is light off
+
+    //if light is off, turn it on
+    if (toggle.checked) {
+        val = "1";
+    }
+
+    let reqBody = "light=" + val;
+
+    myRequest = new XMLHttpRequest();
+    myRequest.addEventListener("load", POSTVerificationLoadEvent);
+    myRequest.open("POST", WEB_SERVER + "/api/light");
+    myRequest.send(JSON.stringify(reqBody));
 }
