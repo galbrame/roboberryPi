@@ -70,8 +70,8 @@ class httpClassTests(unittest.TestCase):
 # Test the classes in webserver.py
 #------------------------------------------
 class webserverTests(unittest.TestCase):
-    _HOST = '127.0.0.1'
-    _PORT = 4000
+    _HOST = '127.0.0.1' #local host
+    _PORT = 4000 #different port than usual operation to avoid port conflicts
     _REQUEST = "{} {} HTTP/1.1\r\nCookie: {}\r\nContent-Length: {}\r\n\r\n{}"
     serConn = None
 
@@ -95,7 +95,9 @@ class webserverTests(unittest.TestCase):
 
     #==========================================
 
-    
+
+    # Helper function for checking the results of the tests. Parses 
+    # webserver.py's http responses to verify status codes and body content.
     #------------------------------------------
     def parseResponse(self, response):
         respHeaders = {}
@@ -130,6 +132,7 @@ class webserverTests(unittest.TestCase):
 
 
 
+    # Verify actually checking for specific types of requests
     #------------------------------------------
     def test_bad_request(self):
         testReq = "This is not a proper HTTP request"
@@ -142,6 +145,7 @@ class webserverTests(unittest.TestCase):
         status, respHeaders, respBody = self.parseResponse(theResp)
 
         self.assertEqual(status, "400")
+
 
     
     # This test requires an html file called index.html in the same directory
@@ -177,7 +181,7 @@ class webserverTests(unittest.TestCase):
 
 
 
-    # checking for proper Content-Type header, since that's been an issue
+    # Checking for proper Content-Type header, since that's been an issue
     #------------------------------------------
     def test_request_css(self):
         msgType = "GET"
@@ -233,6 +237,7 @@ class webserverTests(unittest.TestCase):
 
 
 
+    # Self-explanitory
     #------------------------------------------
     def test_request_doesnt_exist(self):
         msgType = "GET"
@@ -252,6 +257,7 @@ class webserverTests(unittest.TestCase):
         self.assertTrue(theResp.find(testCompare) > 0)
 
 
+    # Physical response tested manually, but verifying the correct response sent
     #------------------------------------------
     def test_request_move_car(self):
         msgType = "POST"
@@ -273,6 +279,7 @@ class webserverTests(unittest.TestCase):
         self.assertTrue(theResp.find("200 OK") > 0)
 
 
+    # Physical response tested manually, but verifying the correct response sent
     #------------------------------------------
     def test_request_stop_car(self):
         msgType = "POST"
@@ -293,6 +300,7 @@ class webserverTests(unittest.TestCase):
         self.assertTrue(theResp.find("200 OK") > 0)
 
 
+    # Physical response tested manually, but verifying the correct response sent
     #------------------------------------------
     def test_request_change_speed(self):
         msgType = "POST"

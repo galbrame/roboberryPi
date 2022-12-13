@@ -11,8 +11,9 @@
 *******************************************/
 
 //regular server operates on port 5000, test server expected on port 4000
-var WEB_SERVER = "http://robopi.local:5000" //home LAN
-//var WEB_SERVER = "140.193.105.207:5000" //um-secure IP
+//switch server depending on LAN working on (will vary by network)
+var WEB_SERVER = "http://robopi.local:5000"
+//var WEB_SERVER = "140.193.105.207:5000"
 var myRequest; //XHR request
 
 
@@ -22,7 +23,7 @@ var myRequest; //XHR request
 * DESCRIPTION: Gets the currently checked radio button value
 * 
 * RETURNS:
-*       val: the value stored in the checked radio button (ie, speed)
+*       val: (String) the value stored in the checked radio button (ie, speed)
 ******************************************/
 function getRadioBtnValue() {
     let radioGrp = document.getElementsByName("speed");
@@ -63,7 +64,9 @@ function POSTVerificationLoadEvent() {
 *              moved.
 * 
 * PARAMETERS:
-*       direction: the direction to move the roboberry
+*       direction: (String) the direction to move the roboberry. Valid values
+*                  are "forward", "reverse", "left", "right". Anything else
+*                  will result in 400 Bad Request server response.
 ******************************************/
 function moveCar(direction) {
     let speed = getRadioBtnValue();
@@ -99,7 +102,7 @@ function stopCar() {
 *              duty cycle for the motor. 
 *
 * PARAMETERS:
-*       speed: the user selected speed for the roboberry
+*       speed: (String) the user selected speed for the roboberry
 ******************************************/
 function changeSpeed(speed) {
     let reqBody = "speed=" + speed;

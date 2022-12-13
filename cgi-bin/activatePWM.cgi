@@ -5,6 +5,11 @@
 # 
 # REMARKS: A Bash script that sets two gpio pins to PWM mode.
 #
+# NOTE: Setting the PWM pin modes at boot time doesn't seem to translate
+#       through to proper functionality for the user, so use this once
+#       past boot mode to get it to work as expected (see README.md for
+#       more details).
+#
 #-----------------------------------------
 
 # pin 18 is wPi 1

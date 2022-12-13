@@ -3,9 +3,11 @@
 #-----------------------------------------
 # NAME: Megan Galbraith
 # 
-# REMARKS: A multi-threaded web server that runs on the Raspberry Pi. It
-#          serves index.html to a web browser and deals with GET and POST
-#          http requests. 
+# REMARKS: A multi-threaded, RESTful web server that runs on the Raspberry Pi.
+#          Serves index.html to a web browser and deals with GET and POST
+#          http requests. Multi-threaded allows us to handle multiple requests
+#          at once. This isn't strictly necessary for the current implementation
+#          but could help deal with multiple users in a future version.
 #
 # Adapted from webserver.py in Assignment 1 chat app
 #-----------------------------------------
@@ -23,11 +25,14 @@ running = True
 HOST = "" # host will change depending on which local network roboberry is running on
 PORT = 5000 # port number at boot time
 TEST_PORT = 4000 # alternative port for testing purposes
+# http response codes
 CODES = {200: "200 OK", 201: "201 Created", 204: "204 No Content", 400: "400 Bad Request", 
             401: "401 Unauthorized", 404: "404 Not Found", 500: "500 Internal Server Error"}
+# possible Content-Type response header options
 TYPES = {"txt": "text/plain", "html": "text/html", "json": "application/json", 
             "jpeg": "image/jpeg", "png": "image/png", "css": "text/css",
             "js": "text/javascript"}
+# Command line argument strings for cgi-bin/move.cgi
 DIRECTIONS = {"forward": "1 0 1 0", "right": "1 0 0 1", "reverse": "0 1 0 1",
                 "left": "0 1 1 0", "stop": "0 0 0 0"}
 
@@ -37,13 +42,14 @@ DIRECTIONS = {"forward": "1 0 1 0", "right": "1 0 0 1", "reverse": "0 1 0 1",
 # readPath
 #
 # DESCRIPTION: Takes a path and tries to read from it. Throws a "404 not found"
-#              error if the resource doesn't exist.
+#              error if the resource doesn't exist or a "500 Server Error" if
+#              something goes wrong trying to fetch the file.
 #
 # PARAMETERS:
-#       myPath: A file directory
+#       myPath: (String) A file directory
 #
 # RETURNS:
-#       body: Whatever was read from the path or an HTTP error
+#       body: (String) Whatever was read from the path or an HTTP error
 #-----------------------------------------
 def readPath(myPath):
     body = ""
@@ -82,10 +88,10 @@ def readPath(myPath):
 # DESCRIPTION: Parses an API path call
 #
 # PARAMETERS:
-#       path: an API call
+#       path: (String) an API call
 #
 # RETURNS:
-#       parsed: a string indicating the right API call
+#       parsed: a String indicating the right API call
 #-----------------------------------------
 def parseAPI(path):
     # turns the path into a list of tokens
@@ -100,14 +106,15 @@ def parseAPI(path):
 #------------------------------------------
 # parseAPIBody
 #
-# DESCRIPTION: Extract the parameters from the POST body and turn them
-#              into a dictionary.
+# DESCRIPTION: Extract the parameters from the POST body and turn them into a
+#              dictionary. Throws a "400 Bad Request" http response for empty
+#              Strings or if none of the expected keys are found.
 #
 # PARAMETERS:
-#       body: the body of a POST API request
+#       body: (String) the body of a POST API request
 #
 # RETURNS:
-#       params: the API parameters, as a key: value pair dictionary
+#       params: (Dictionary) the API parameters, as a key: value pair dictionary
 #-----------------------------------------
 def parseAPIBody(body):
     params = {}
@@ -132,16 +139,14 @@ def parseAPIBody(body):
 #------------------------------------------
 # doGET
 #
-# DESCRIPTION: Fulfills a response for a GET request.
+# DESCRIPTION: Fulfills a response for a GET request (fetch a local resource).
 #
 # PARAMETERS:
-#       path: A file directory
-#       reqHeaders: A {list/dict?} of the http request headers  NEED THIS?
-#
+#       path: (String) A file directory
 # RETURNS:
-#       myResponse: An HttpResponse as a string
+#       myResponse: (String) A formatted HttpResponse
 #-----------------------------------------
-def doGET(path, reqHeaders):
+def doGET(path):
     #default values
     respCode = CODES[204]
     contentType = TYPES["txt"]
@@ -173,9 +178,6 @@ def doGET(path, reqHeaders):
     if body:
         respCode = CODES[200]
 
-    #if cookie - check for who's asking or just compare to list of conn?
-    #do something with headers
-
     myResponse = HttpResponse(respCode, contentType, "", body)
 
     return myResponse.toString()
@@ -185,24 +187,27 @@ def doGET(path, reqHeaders):
 #------------------------------------------
 # doPOST
 #
-# DESCRIPTION: POST API calls the robot control scripts
+# DESCRIPTION: POST API calls the robot control scripts. Some APIs have empty
+#              bodies while others contain the control script arguments. Will
+#              not raise an error if a body comes with an API that doesn't need
+#              arguments (will just ignore) but APIs that require arguments are
+#              expecting them as key:value pairs in JSON or else with raise a
+#              "400 Bad Request" response.
 #
 # PARAMETERS:
-#       path: The API call
-#       reqHeaders: A {list/dict?} of the http request headers?????????????
-#       reqBody: The body of the request, where the parameters are hidden
+#       path: (String) The API call
+#       reqBody: (Empty String or JSON) The body of the request, where the
+#                parameters are hidden. Non-empty reqquest bodies should be in
+#                JSON format.
 # RETURNS:
-#       myResponse: An HttpResponse as a string
+#       myResponse: (String) A formatted HttpResponse
 #-----------------------------------------
-def doPOST(path, reqHeaders, reqBody):
-    # default values
+def doPOST(path, reqBody):
+    # default values, since /api/stop doesn't require a request body
     params = {}
     dir = "stop"
     speed = "0"
     light = "0"
-
-    # if main user, then do POST
-    # else unauth err (or something, maybe a browser popup like "wait your turn, please")
 
     apiPath = parseAPI(path)
 
@@ -273,7 +278,6 @@ def beginThread(conn):
     try:
         
         myResponse = str (BadRequest)   #default setting
-        #print('Connected by', addr)
         data = conn.recv(1024)
 
         if data:
@@ -286,7 +290,7 @@ def beginThread(conn):
             if msgType == "GET":
                 myResponse = doGET(path, reqHeaders)
             elif msgType == "POST":
-                myResponse = doPOST(path, reqHeaders, reqBody)
+                myResponse = doPOST(path, reqBody)
 
         # just in case something goes ka-boom
         if myResponse is None:
@@ -333,7 +337,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     sock.bind((HOST, PORT))
     sock.listen()
 
-    # turn led on to indicate server is running
+    # turn led on to physically indicate server is running
     os.system("./cgi-bin/led.cgi 1")
 
     while running:

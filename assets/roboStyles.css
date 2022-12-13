@@ -3,8 +3,9 @@
  
  REMARKS: The style sheet for the roboberry control web page
 
- NOTES: I love rainbows, gradients, and dark mode (but you likely already
-        noticed that if you've seen the page).
+ NOTES: I am not a graphic designer, but I do love rainbows, gradients, 
+        and dark mode (but you likely already noticed that if you've seen 
+        the page).
 ----------------------------------------------------------*/
 
 /*---------MAIN STYLES--------*/
@@ -30,7 +31,6 @@ body {
 }
 a {
     text-decoration: none;
-
 }
 .content-wrapper {
     max-width: 1000px;
@@ -40,7 +40,7 @@ a {
 }
 
 
-/*--------BUTTONS--------*/
+/*--------DIRECTIONAL BUTTONS--------*/
 .button-block {
     max-width: 300px;
     display: inline-block;
@@ -72,7 +72,7 @@ button:active {
 }
 
 
-/*--------RADIO BUTTONS--------*/
+/*--------SPEED RADIO BUTTONS--------*/
 .speedometer {
     font-size: 1.5em;
     min-width: 150px;
