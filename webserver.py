@@ -158,6 +158,12 @@ def doGET(path, reqHeaders):
         # except index.html is often not called by name...
         elif body.find("<html>") > 0:
             contentType = TYPES["html"]
+
+            # Because of the issue with trying to change gpio mode to PMW
+            # at boot time (see README.md), we do it here when the web page
+            # is fetched to make sure that the speed functionality works as
+            # expected
+            os.system("./cgi-bin/activatePWM.cgi")
         
 
     except HttpException:
@@ -321,9 +327,6 @@ if len(args) > 1:
         PORT = TEST_PORT
 
 print("RPi server running on", socket.gethostname(), PORT)
-
-# Turning on pwm mode doesn't seem to work from rc.local on the Pi, so do here
-os.system("./cgi-bin/activatePWM.cgi")
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
