@@ -25,7 +25,7 @@ initial construction of the scripts and physical components were based off this,
 but I made certain adaptations along the way, such as compiling the multiple
 movement control scripts into just two scripts that accept arguments.
 
-A note about pulse width modulation (PWM): this is a technique to control the power being supplied to something. A certain number of pulses are produced every time cycle, with the length of the pulse corresponding to how much of the supplied power a component will receive. For example, if the pulse is active for half the time, the component will only receive half of the full power source (see image below).
+A note about pulse width modulation (PWM): this is a technique to control the power being supplied by averaging the value of the input voltage through a series of ON-OFF pulses. The average voltage is proportional to the width of the pulses, as seen below. Basically, the wider the pulses, the more power supplied to the motor, the faster it spins. 
 
 ![pwm examples](assets/images/pwm.png)
 
@@ -62,7 +62,7 @@ Now that I knew the logic was correct, I tested wiring up each motor to make
 sure I had the motors correctly polarized (ie, they turn the wheels in the 
 expected direction). I'm using a L298N motor driver to simplify the motor 
 control. I also think it cuts down on the number of wires needed compared to 
-using an L293D H bridge, as suggested in the reference project. (Also, electronics supply issues are still a thing and this is what I could get). The L298N has two motor control ports, three power ports (only two used in this case for a 9 volt battery strap to power the motors), four motor control pins (forward and reverse for each motor), and two PWM pins.
+using an L293D H bridge, as suggested in the reference project. (Also, electronics supply issues are still a thing and this is what I could get, but Im not sad about te results). The L298N has two motor control ports, three power ports (only two used in this case for a 9 volt battery strap to power the motors), four motor control pins (forward and reverse for each motor), and two PWM pins.
 
 ![Wired up L298N motor driver](assets/images/L298N.jpg)
 
@@ -84,14 +84,22 @@ I took the base of the Python web server from a previous assignment ([chat app](
 
 I highly recommend reading through the [reference project](https://www.instructables.com/IoT-Controlling-a-Raspberry-Pi-Robot-Over-Internet/) before trying to install your own roboberryPi. It will tell you more about how some of the electronic components work than you'll find here.
 
-1. Clone this repo to your Raspberry Pi (may work on other models, but I make no guarantees): ```git clone https://github.com/galbrame/roboberryPi.git```
+1. Clone this repo to your Raspberry Pi (may work on other models, but I make no guarantees): 
+
+```git clone https://github.com/galbrame/roboberryPi.git```
 2. Change the WEB_SERVER variable in assets/roboScript.js to whatever your Pi is on your LAN
-3. Clone and install WiringPi: ```git clone https://github.com/WiringPi/WiringPi.git
+3. Clone and install WiringPi: 
+
+```git clone https://github.com/WiringPi/WiringPi.git
 cd wiringPi
 ./build```
-4. Edit `/etc/rc.local` to change the gpio modes and run webserver.py at boot: ```sudo nano /etc/rc.local```
 
-    - ```...
+4. Edit `/etc/rc.local` to change the gpio modes and run webserver.py at boot: 
+
+```sudo nano /etc/rc.local```
+
+    - 
+    ```#any existing code
     gpio -g mode 5 out
     gpio -g mode 6 out
     gpio -g mode 13 out
@@ -100,14 +108,28 @@ cd wiringPi
     cd /
     python /home/_\<username\>_/roboberryPi/webserver.py
     cd /
-    ...
-    exit 0```
+    
+    exit 0 #last line in file```
     
     - NOTE: Your Pi may work differently, but my Pi seems to launch the webserver more reliably if I navigate to the home folder first
 5. Reboot the Pi: ```sudo reboot```
 6. Once the pi is booted, you should be able to find the GUI at your local address on port 5000
 
 The GUI was tested on both Mozilla Firefox and Google Chrome, but better responsiveness was occasionally observed on the Chrome browser, for whatever reason.
+
+## Running the Tests
+
+Assuming you've already cloned the repo:
+
+1. Open two terminals (or use screen/tmux).
+2. Navigate both to the roboberry/ directory.
+3. In one terminal, launch the web server in test mode:
+```./webserver.py test```
+4. In the other terminal, launch the test suite:
+```python -m unittest -v```
+5. Once the tests are complete, you can close the webserver with ctrl+c.
+
+The web server and tests can be run on any machine, since they're both just Python, but some tests related to the scripts may fail on non-Pi machines. Also, the tests expect to be able to find index.html and assets/roboScripts.css, so if they are run in isolation, those tests will fail as well. Finally, one test expects a single file called someText.txt to be located in the main directory. It doesn't matter what this file contains because the test just compares the server response to the file contents.
 
 
 ## What Did I Learn?
