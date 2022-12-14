@@ -34,7 +34,7 @@ A note about pulse width modulation (PWM): this is a technique to control a comp
 
 ## Video Presentation
 
-Check out my video presentation on [YouTube]().
+Check out my video presentation on [YouTube](https://www.youtube.com/watch?v=ZsqYy6DDKjc).
 
 
 ## Components
