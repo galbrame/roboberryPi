@@ -35,6 +35,7 @@ TYPES = {"txt": "text/plain", "html": "text/html", "json": "application/json",
 # Command line argument strings for cgi-bin/move.cgi
 DIRECTIONS = {"forward": "1 0 1 0", "right": "1 0 0 1", "reverse": "0 1 0 1",
                 "left": "0 1 1 0", "stop": "0 0 0 0"}
+pwm_mode = False # Check if PWM has been properly activated yet
 
 
 
@@ -147,6 +148,8 @@ def parseAPIBody(body):
 #       myResponse: (String) A formatted HttpResponse
 #-----------------------------------------
 def doGET(path):
+    global pwm_mode
+
     #default values
     respCode = CODES[204]
     contentType = TYPES["txt"]
@@ -168,7 +171,9 @@ def doGET(path):
             # at boot time (see README.md), we do it here when the web page
             # is fetched to make sure that the speed functionality works as
             # expected
-            os.system("./cgi-bin/activatePWM.cgi")
+            if not pwm_mode:
+                os.system("./cgi-bin/activatePWM.cgi")
+                pwm_mode = True
         
 
     except HttpException:
@@ -208,6 +213,7 @@ def doPOST(path, reqBody):
     dir = "stop"
     speed = "0"
     light = "0"
+    exitStatus = 0
 
     apiPath = parseAPI(path)
 
@@ -244,14 +250,18 @@ def doPOST(path, reqBody):
         try:
             # just change the speed
             if apiPath == "speed":
-                os.system("./cgi-bin/changeSpeed.cgi " + speed)
+                exitStatus = os.system("./cgi-bin/changeSpeed.cgi " + speed)
 
             elif apiPath == "light":
-                os.system("./cgi-bin/led.cgi " + light)
+                exitStatus = os.system("./cgi-bin/led.cgi " + light)
 
             # move in any direction or stop
             else:
-                os.system("./cgi-bin/move.cgi " + DIRECTIONS[dir] + " " + speed)
+                exitStatus = os.system("./cgi-bin/move.cgi " + DIRECTIONS[dir] + " " + speed)
+
+            # error checking
+            if exitStatus != 0:
+                raise ServerError
         
         except Exception as e:
             print("Something went wrong with launching the script")
@@ -288,7 +298,7 @@ def beginThread(conn):
             msgType, path, reqHeaders, reqBody = newReq.parse()
 
             if msgType == "GET":
-                myResponse = doGET(path, reqHeaders)
+                myResponse = doGET(path)
             elif msgType == "POST":
                 myResponse = doPOST(path, reqBody)
 
