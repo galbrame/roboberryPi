@@ -87,33 +87,39 @@ I highly recommend reading through the [reference project](https://www.instructa
 1. Clone this repo to your Raspberry Pi (may work on other models, but I make no guarantees): 
 
 ```git clone https://github.com/galbrame/roboberryPi.git```
+
 2. Change the WEB_SERVER variable in assets/roboScript.js to whatever your Pi is on your LAN
+
 3. Clone and install WiringPi: 
 
-```git clone https://github.com/WiringPi/WiringPi.git
+```
+git clone https://github.com/WiringPi/WiringPi.git
 cd wiringPi
-./build```
+./build
+```
 
 4. Edit `/etc/rc.local` to change the gpio modes and run webserver.py at boot: 
 
 ```sudo nano /etc/rc.local```
 
-    - 
-    ```#any existing code
-    gpio -g mode 5 out
-    gpio -g mode 6 out
-    gpio -g mode 13 out
-    gpio -g mode 19 out
-    gpio -g mode 10 out
-    cd /
-    python /home/_\<username\>_/roboberryPi/webserver.py
-    cd /
+```
+#inside rc.local
+#any existing code, we add our own below:
+gpio -g mode 5 out
+gpio -g mode 6 out
+gpio -g mode 13 out
+gpio -g mode 19 out
+gpio -g mode 10 out
+cd /
+python /home/<username>/roboberryPi/webserver.py
+cd /
+
+exit 0 #last line in file
+```
     
-    exit 0 #last line in file```
-    
-    - NOTE: Your Pi may work differently, but my Pi seems to launch the webserver more reliably if I navigate to the home folder first
-5. Reboot the Pi: ```sudo reboot```
-6. Once the pi is booted, you should be able to find the GUI at your local address on port 5000
+   - NOTE: Your Pi may work differently, but my Pi seems to launch the webserver more reliably if I navigate to the home folder first
+5. Reboot the Pi: `sudo reboot`
+6. Once the pi is booted, you should be able to find the GUI at your local address on port 5000 (eg, myRaspberryPi.local:5000)
 
 The GUI was tested on both Mozilla Firefox and Google Chrome, but better responsiveness was occasionally observed on the Chrome browser, for whatever reason.
 
