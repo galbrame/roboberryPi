@@ -8,7 +8,7 @@ Megan Galbraith
 ## Project Summary
 
 roboberry Pi (naming things is _hard_) is an IoT project that aimed to create a
-mobile robot that could be controlled by another device on the network. It's
+mobile robot that could be controlled by another device on the network. Its
 "brain" is a Raspberry Pi 3B, which allows it to also act as a web server. 
 An on-board web server is necessary for a web-based GUI to control the robot.
 roboberry controls include: direction, speed, light on/off.
@@ -25,7 +25,7 @@ initial construction of the scripts and physical components were based off this,
 but I made certain adaptations along the way, such as compiling the multiple
 movement control scripts into just two scripts that accept arguments.
 
-A note about pulse width modulation (PWM): this is a technique to control the power being supplied by averaging the value of the input voltage through a series of ON-OFF pulses. The average voltage is proportional to the width of the pulses, as seen below. Basically, the wider the pulses, the more power supplied to the motor, the faster it spins. 
+A note about pulse width modulation (PWM): this is a technique to control a component's power supply by averaging the value of the input voltage through a series of ON-OFF pulses. The average voltage is proportional to the width of the pulses, as seen below. Basically, the wider the pulses, the more power supplied to the motor, the faster it spins. 
 
 ![pwm examples](assets/images/pwm.png)
 
@@ -62,7 +62,7 @@ Now that I knew the logic was correct, I tested wiring up each motor to make
 sure I had the motors correctly polarized (ie, they turn the wheels in the 
 expected direction). I'm using a L298N motor driver to simplify the motor 
 control. I also think it cuts down on the number of wires needed compared to 
-using an L293D H bridge, as suggested in the reference project. (Also, electronics supply issues are still a thing and this is what I could get, but Im not sad about te results). The L298N has two motor control ports, three power ports (only two used in this case for a 9 volt battery strap to power the motors), four motor control pins (forward and reverse for each motor), and two PWM pins.
+using an L293D H bridge, as suggested in the reference project. (Also, electronics supply issues are still a thing and this is what I could get, but I'm not sad about the results). The L298N has two motor control ports, three power ports (only two used in this case for a 9 volt battery strap to power the motors), four motor control pins (forward and reverse for each motor), and two PWM pins.
 
 ![Wired up L298N motor driver](assets/images/L298N.jpg)
 
@@ -73,7 +73,7 @@ For the completely assembled roboberry itself, I drilled holes in a spare piece 
 
 Rather than write my own gpio control, I used the [WiringPi](https://github.com/WiringPi/WiringPi) gpio control library. Since this was a project about networks, it seemed a little over the top to put extra work into low level hardware controls. Plus, this sped up my circuit prototyping.
 
-Having eight scripts that basically do the same thing (based on the reference project) brakes the design principle of code re-use, so once I knew that all of those scripts worked as expected, I refactored them into two scripts that accepted arguments. This could have technically been executed in a single script, but for the sake of speed of execution, I opted for a script that mainly controls the movement while another just changes the speed. This means less information collection on the front end (and thus, less data having to be sent over the network) and less unnecessary gpio pin re-writes in the back-end.
+Having eight scripts that basically do the same thing (based on the reference project) breaks the design principle of code re-use, so once I knew that all of those scripts worked as expected, I refactored them into two scripts that accepted arguments. This could have technically been executed in a single script, but for the sake of speed of execution, I opted for a script that mainly controls the movement while another just changes the speed. This means less information collection on the front end (and thus, less data having to be sent over the network) and less unnecessary gpio pin re-writes in the back-end.
 
 I took the base of the Python web server from a previous assignment ([chat app](https://github.com/galbrame/localhostChatApp)) and modified it to specifically deal with the API calls for this project. I also added in a command to set the PWM pin modes whenever index.html is requested. It was difficult to troubleshoot, but for some reason, setting the PWM gpio pins at boot time wouldn't make them accessible to a user running the GUI. They were correctly assigned in the system, but they would not respond to input. I believe this has something to do with the user status at boot time (root vs my auto-login username). Since the web server is also launched at boot time, putting the command at the beginning of the server also did not work, but by the time index.html is being requested, we know everything else has caught up to the correct permissions.
 
