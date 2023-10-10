@@ -17,7 +17,7 @@ roboberry controls include: direction, speed, light on/off.
 
 To avoid CORS (cross-origin resource sharing) issues, roboberry only operates
 on a LAN (local access network). While http GET requests typically aren't
-impacted by CORS, operations such as POST (which is used in roboberry's APIs)
+impacted by CORS, operations such as POST (which is used in roboberry's API)
 are restricted by browsers for security purposes. 
 
 roboberry was inspired by this [Autodesk Instructables](https://www.instructables.com/IoT-Controlling-a-Raspberry-Pi-Robot-Over-Internet/) project. A lot of the
@@ -25,16 +25,11 @@ initial construction of the scripts and physical components were based off this,
 but I made certain adaptations along the way, such as compiling the multiple
 movement control scripts into just two scripts that accept arguments.
 
-A note about pulse width modulation (PWM): this is a technique to control a component's power supply by averaging the value of the input voltage through a series of ON-OFF pulses. The average voltage is proportional to the width of the pulses, as seen below. Basically, the wider the pulses, the more power supplied to the motor, the faster it spins. 
+A note about pulse width modulation (PWM): this is a technique to control a component's power supply by averaging the value of the input voltage through a series of ON-OFF pulses. The average voltage is proportional to the width of the pulses, as seen below. Basically, the wider the pulses, the more power supplied to the component. This is how roboberry's speed is controlled, but could also be used to control the amount of light emitted from the onboard LED.
 
 ![pwm examples](assets/images/pwm.png)
 
 (Image from [Last Minute Engineers](https://lastminuteengineers.com/l293d-dc-motor-arduino-tutorial/))
-
-
-## Video Presentation
-
-Check out my video presentation on [YouTube](https://www.youtube.com/watch?v=ZsqYy6DDKjc).
 
 
 ## Components
@@ -48,6 +43,11 @@ Check out my video presentation on [YouTube](https://www.youtube.com/watch?v=Zsq
 - 4-6 LEDs, at least 2 colours (to test gpio control logic)
 - 4-6 330 Ohm resistors (for the LEDs)
 - Power sources: 1 for your Pi (for mobility), 1 for the motors
+
+
+## Video Presentation
+
+Check out my project video presentation on [YouTube](https://www.youtube.com/watch?v=ZsqYy6DDKjc).
 
 
 ## Building It
@@ -150,7 +150,7 @@ Additionally, I finally learned command line git. I had only used git on GUIs fo
 - Handle multiple users by tracking cookies or a list of TCP connections managed by the webserver or something
 - Swivel camera attachment with a viewport on the GUI to see where you're driving
 - Operate on WAN instead of LAN
-- Use a more intuitive form of control, such as a virtual joystick
+- Use a more intuitive form of control, such as a joystick graphic instead of buttons
 
 
 ## Resources
